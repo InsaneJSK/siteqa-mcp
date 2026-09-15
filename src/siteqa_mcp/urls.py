@@ -59,3 +59,15 @@ def internal_link(page_url: str, hrefs = list[str]) -> list[str]:
             destinations.append(destination)
             seen.add(destination)
     return destinations
+
+def resolve_canonical(page_url: str, href: str) -> str | None:
+    """Resolve a canonical target using our basic validation rules."""
+    href = href.strip()
+
+    if not href or "#" in href:
+        return None
+
+    if any(character.isspace() for character in href):
+        return None
+
+    return resolve_url(page_url, href)
