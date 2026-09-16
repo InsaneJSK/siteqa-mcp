@@ -1,10 +1,14 @@
+import json
+from pathlib import Path
+import pytest
 import asyncio
-
 import httpx
 from mcp import Client
-
 import siteqa_mcp.server as server
 
+@pytest.fixture(autouse=True)
+def isolated_audit_directory(monkeypatch, tmp_path):
+    monkeypatch.setenv("SITEQA_AUDIT_DIR", str(tmp_path))
 
 def call_audit(arguments):
     async def run():
@@ -50,6 +54,17 @@ def test_mcp_audit_returns_findings_and_http_failures(monkeypatch):
         "broken_internal_link",
     }
     assert report["fetch_issues"][0]["status_code"] == 404
+
+    saved_path = Path(report["report_path"])
+    assert saved_path.is_file()
+
+    saved = json.loads(saved_path.read_text(encoding="utf-8"))
+
+    assert saved["audit_id"] == report["audit_id"]
+    assert saved["findings"] == report["findings"]
+    assert saved["fetch_issues"] == report["fetch_issues"]
+    assert saved["schema_version"] == 1
+    assert saved["max_pages"] == 10
 
 
 def test_mcp_audit_exposes_incomplete_coverage(monkeypatch):
