@@ -117,7 +117,7 @@ uv run python -c "import json; from siteqa_mcp.comparison import compare_saved_a
 
 Expected: **8 resolved**, zero remaining, newly observed, or unverified findings, and no coverage warnings.
 
-## Scope and limitations
+## Scope and limitations (future scope)
 
 - Inspects fetched HTML; does not execute JavaScript.
 - Does not support HTML `<base>` elements or HTTP Link-header canonicals.
